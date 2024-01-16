@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Query Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .card {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body style="background-image: url('backgroung.jpg');">
+    <div class="card">
+        <h1>Database Query Dashboard</h1>
+
+        <form id="queryForm">
+            <label for="query">Enter SQL Query:</label>
+            <textarea id="query" name="query" rows="4" cols="50"></textarea>
+            <br>
+            
+            <label for="lat">Latitude:</label>
+            <input type="text" id="lat" name="lat" readonly>
+            <br>
+            
+            <label for="long">Longitude:</label>
+            <input type="text" id="long" name="long" readonly>
+            <br>
+
+            <button type="button" onclick="submitQuery()">Submit Query</button>
+        </form>
+
+        <div id="result">
+            <table id="resultTable"></table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get user's location and populate the latitude and longitude fields
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById('lat').value = position.coords.latitude;
+                document.getElementById('long').value = position.coords.longitude;
+            });
+        });
+
+        function submitQuery() {
+            var query = document.getElementById('query').value;
+            var lat = document.getElementById('lat').value;
+            var long = document.getElementById('long').value;
+
+            // Simulate fetch operation (replace this with actual fetch code)
+            fetch('/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'query': query,
+                    'lat': lat,
+                    'long': long
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data.result);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Function to display results in a table
+        function displayResults(resultData) {
+            var table = document.getElementById('resultTable');
+            table.innerHTML = ''; // Clear previous results
+
+            resultData.forEach(function(rowData) {
+                var row = table.insertRow();
+                rowData.forEach(function(cellData) {
+                    var cell = row.insertCell();
+                    cell.appendChild(document.createTextNode(cellData));
+                });
+            });
+        }
+    </script>
+</body>
+</html>

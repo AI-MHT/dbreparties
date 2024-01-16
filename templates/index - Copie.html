@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Query Dashboard</title>
+</head>
+<body>
+    <h1>Database Query Dashboard</h1>
+
+    <form id="queryForm">
+        <label for="query">Enter SQL Query:</label>
+        <textarea id="query" name="query" rows="4" cols="50"></textarea>
+        <br>
+        
+        <label for="lat">Latitude:</label>
+        <input type="text" id="lat" name="lat" readonly>
+        <br>
+        
+        <label for="long">Longitude:</label>
+        <input type="text" id="long" name="long" readonly>
+        <br>
+
+        <button type="button" onclick="submitQuery()">Submit Query</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get user's location and populate the latitude and longitude fields
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById('lat').value = position.coords.latitude;
+                document.getElementById('long').value = position.coords.longitude;
+            });
+        });
+
+        function submitQuery() {
+            var query = document.getElementById('query').value;
+            var lat = document.getElementById('lat').value;
+            var long = document.getElementById('long').value;
+
+            // You can use AJAX or Fetch API to send the data to the server
+            fetch('/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'query': query,
+                    'lat': lat,
+                    'long': long
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data.result, null, 2) + '</pre>';
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
